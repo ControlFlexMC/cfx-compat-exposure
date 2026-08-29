@@ -45,14 +45,12 @@ sourceSets {
 repositories {
     mavenCentral()
     maven { url 'https://cursemaven.com' }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    // ControlFlex —— 先用本地 Forge 版 0.8.7 jar 编译（API 部分为纯 Java，与 loader 无关）。
-    // TODO: 后续切换为 Maven 依赖：
-    //   mavenLocal() → com.ifels.controlflex:controlflex-api:<version>
-    //   （或 JitPack → com.github.ControlFlexMC:control-flex-api:<version>）
-    compileOnly files('/Users/ifels/Documents/mc/deploy/controlflex-0.8.7-mc1.20.1-forge.jar')
+    // ControlFlex API（纯 Java，与 loader 无关），经 JitPack 解析。
+    compileOnly "com.github.ControlFlexMC:control-flex-api:${controlflex_api_version}"
     // Exposure 1.9.18 (1.21.1 NeoForge)
     // https://www.curseforge.com/minecraft/mc-mods/exposure/files/8223555
     compileOnly 'curse.maven:exposure-871755:8223555'
@@ -81,6 +79,8 @@ processResources {
         'java_version'           : java_version,
         'controlflex_mod_id'     : controlflex_mod_id,
         'exposure_mod_id'        : exposure_mod_id,
+        'controlflex_version_range': controlflex_version_range,
+        'exposure_version_range' : exposure_version_range,
     ]
 
     filesMatching(['pack.mcmeta', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {

@@ -55,9 +55,9 @@ dependencies {
 
     // ControlFlex API（纯 Java，与 loader 无关），经 JitPack 解析。
     compileOnly "com.github.ControlFlexMC:control-flex-api:${controlflex_api_version}"
-    // Exposure 1.9.20 (1.20.1 Fabric；1.9.21 未发布 Fabric 版)
-    // https://www.curseforge.com/minecraft/mc-mods/exposure/files/7812667
-    compileOnly 'curse.maven:exposure-871755:7812667'
+    // Exposure 1.9.18 (1.21.1 Fabric)
+    // https://www.curseforge.com/minecraft/mc-mods/exposure/files/8223556
+    compileOnly 'curse.maven:exposure-871755:8223556'
     compileOnly 'org.jetbrains:annotations:24.0.1'
 
     annotationProcessor "org.spongepowered:mixin:${mixin_processor_version}:processor"

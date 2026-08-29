@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the Forge (MC 1.20.1) artifact for cfx-compat-exposure.
+# Build the NeoForge (MC 1.21.1) artifact for cfx-compat-exposure.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -40,14 +40,14 @@ else
 fi
 
 if $RELEASE; then build_type="Release"; else build_type="Debug"; fi
-echo "==> ${build_type} Forge build: version ${label}"
+echo "==> ${build_type} NeoForge build: version ${label}"
 
 if $CLEAN; then
     echo "==> Cleaning first..."
     ./gradlew clean
 fi
 
-gradle_cmd=(./gradlew :forge:build)
+gradle_cmd=(./gradlew :neoforge:build)
 if [[ ${#gradle_args[@]} -gt 0 ]]; then
     gradle_cmd+=("${gradle_args[@]}")
 fi
@@ -58,7 +58,7 @@ echo "==> Running: ${gradle_cmd[*]}"
 "${gradle_cmd[@]}"
 
 # ── Summary ───────────────────────────────────────────────────────────────────
-artifact=$(ls -1t forge/build/libs/*.jar 2>/dev/null | head -1 || true)
+artifact=$(ls -1t neoforge/build/libs/*.jar 2>/dev/null | head -1 || true)
 if [[ -n "$artifact" ]]; then
     echo ""
     echo "✓ Build complete: $(basename "$artifact")"

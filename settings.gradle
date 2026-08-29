@@ -2,10 +2,6 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         maven {
-            name = 'MinecraftForge'
-            url = 'https://maven.minecraftforge.net/'
-        }
-        maven {
             name = 'SpongePowered'
             url = 'https://repo.spongepowered.org/repository/maven-public/'
         }
@@ -20,7 +16,6 @@ pluginManagement {
     }
 
     plugins {
-        id 'net.neoforged.moddev.legacyforge' version '2.0.141'
         id 'net.neoforged.moddev' version '2.0.141'
         id 'fabric-loom' version '1.6-SNAPSHOT'
     }
@@ -30,6 +25,7 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
 }
 
-include 'forge', 'fabric', 'neoforge'
+// 本分支（1.21.1）仅含 1.21.1 的两个 loader；MC 1.20.1（Forge + Fabric）见 1.20.1 分支。
+include 'fabric', 'neoforge'
 
 rootProject.name = 'cfx-compat-exposure'

@@ -29,13 +29,13 @@ side="CLIENT"
 [[dependencies.${mod_id}]]
 modId="${controlflex_mod_id}"
 type="required"
-versionRange="[0.8.6.3,)"
+versionRange="${controlflex_version_range}"
 ordering="AFTER"
 side="CLIENT"
 
 [[dependencies.${mod_id}]]
 modId="${exposure_mod_id}"
 type="required"
-versionRange="[1.9.18,)"
+versionRange="${exposure_version_range}"
 ordering="AFTER"
 side="CLIENT"
