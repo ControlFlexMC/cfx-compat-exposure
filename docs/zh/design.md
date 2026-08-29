@@ -10,11 +10,10 @@
 |--------|----|--------|------------------------|-------------|
 | `forge` | 1.20.1 | Forge 47.4.4 | 1.9.21（forge） | 0.8.7+ |
 | `fabric` | 1.20.1 | Fabric Loader 0.15.11 + Fabric API 0.92.2 | 1.9.20（fabric） | 0.8.7+ |
-| `neoforge` | 1.21.1 | NeoForge 21.1.209 | 1.9.18（neoforge） | 0.8.6.3+ |
 
-> 说明：Exposure 1.9.21 未发布 1.20.1 Fabric 版本，Fabric 侧以 1.9.20（该平台最新）为准；运行时两个 1.20.1 loader 均要求 Exposure ≥ 1.9.20。1.21.1 Fabric 版本规划中。
+> 本分支（`1.20.1`）构建 1.20.1 的两个 loader；MC 1.21.1 版本（Fabric + NeoForge）见 `1.21.1` 分支。Exposure 1.9.21 未发布 1.20.1 Fabric 版本，Fabric 侧以 1.9.20（该平台最新）为准；运行时两个 loader 均要求 Exposure ≥ 1.9.20。
 
-三个 loader 共享同一份纯 Java 源码（`common/src/main/java`）；平台差异仅在构建脚本与元数据（mods.toml / neoforge.mods.toml / fabric.mod.json、mixins.json 的 `compatibilityLevel`、pack.mcmeta 的 pack_format）。
+两个 loader 共享同一份纯 Java 源码（`common/src/main/java`）；平台差异仅在构建脚本与元数据（mods.toml / fabric.mod.json、mixins.json 的 `compatibilityLevel`、pack.mcmeta 的 pack_format）。
 
 ## 为什么挂这两个方法
 
@@ -46,7 +45,7 @@ Exposure (Mixin 目标)
 - **`CameraClientViewfinderMixin`**（common）：`@Inject` 两个方法的 `RETURN`。`remap = false`（Exposure 是第三方类，无需原版映射）。目标类：`io.github.mortuusars.exposure.client.camera.CameraClient`。
 - **`CfxExposureMod`**（每个 loader 一份）：`@Mod` 入口；客户端启动时校验 Mixin 目标类可加载；订阅登出事件 → `bridge.onWorldExit()`。
   - Forge：`@Mod(id)` + `FMLJavaModLoadingContext` + `MinecraftForge.EVENT_BUS` + `ClientPlayerNetworkEvent.LoggingOut`
-  - NeoForge：`@Mod(value, dist = CLIENT)` + `IEventBus` + `NeoForge.EVENT_BUS` + `neoforge...ClientPlayerNetworkEvent.LoggingOut`
+  - Fabric：`ClientModInitializer` + `ClientPlayConnectionEvents.DISCONNECT`
 
 ## 配对规则
 
@@ -74,7 +73,7 @@ io.github.mortuusars.exposure.client.camera.viewfinder.ViewfinderOverlay
 
 - ControlFlex API 0.8.7：JitPack（`com.github.ControlFlexMC:control-flex-api:0.8.7`，API 部分为纯 Java，与 loader 无关），compileOnly。注意：0.8.7 将 `IInteractiveContextRegistrar` 的方法由 `notifyForeground`/`notifyBackground` 改名为 `notifyOverlayForeground`/`notifyOverlayBackground`，因此运行时要求 ControlFlex ≥ 0.8.7。
 - Exposure：CurseForge Maven（`curse.maven:exposure-871755:<fileId>`，与 cfx-compat-epicfight 对 Epic Fight 的依赖方式一致），compileOnly。
-- 运行时元数据：1.20.1（forge + fabric）声明 `controlflex [0.8.7,)`、`exposure [1.9.20,)`；neoforge 维持 `controlflex [0.8.6.3,)` / `exposure [1.9.18,)`。均为 required、CLIENT。
+- 运行时元数据：两个 loader 均声明 `controlflex [0.8.7,)`、`exposure [1.9.20,)`，均为 required、CLIENT。
 
 ## 构建
 
@@ -82,10 +81,9 @@ io.github.mortuusars.exposure.client.camera.viewfinder.ViewfinderOverlay
 
 - `forge/`：`net.neoforged.moddev.legacyforge` 2.0.141 + `mixin {}` DSL + refmap + `MixinConfigs` manifest 属性（Forge 1.20.1 需要）+ `reobfJar`。
 - `fabric/`：`fabric-loom` 1.6-SNAPSHOT（与 ControlFlex 一致）+ mojmap + `loom.mixin.defaultRefmapName`；`fabric.mod.json` 通过 processResources 展开占位符。
-- `neoforge/`：`net.neoforged.moddev` 2.0.141，仅 Mixin annotation processor（moddev 不提供 mixin DSL；全部 mixin 为 remap=false，无 refmap 需求），mixin 配置经 `neoforge.mods.toml` 的 `[[mixins]]` 声明。
 
 ## 验证
 
-- `./gradlew :forge:build :neoforge:build` 产出两个 jar。
+- `./gradlew :forge:build :fabric:build` 产出两个 jar。
 - jar 内容检查：mixins.json / mods.toml 占位符展开、Forge 侧 manifest `MixinConfigs`、class 文件齐全。
 - 运行时：客户端日志出现 `Exposure viewfinder bridge active (mixin verification passed)`；举起/放下相机时 ControlFlex 行为切换正确（手动测试）。

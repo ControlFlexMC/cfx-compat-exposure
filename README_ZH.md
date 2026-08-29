@@ -4,6 +4,8 @@ ControlFlex ↔ Exposure 桥接模组 — 在 Exposure 取景框 overlay 进入�
 
 [English](README.md)
 
+> 本分支（`1.20.1`）面向 **Minecraft 1.20.1（Forge + Fabric）**；Minecraft 1.21.1 版本（Fabric + NeoForge）见 `1.21.1` 分支。
+
 ## 为什么需要这个模组？
 
 Exposure 的取景框 overlay 是一个交互式覆盖层：举起相机时它会接管相机控制并隐藏大部分原版 HUD。ControlFlex 只有在知道某个交互上下文存在时，才会切换摇杆（右摇杆/GUI）行为 —— 且这类 overlay 没有屏级 GUI，无法靠屏幕检测识别。
@@ -38,9 +40,7 @@ Exposure 的取景框 overlay 是一个交互式覆盖层：举起相机时它�
 ## 前置模组
 
 - **ControlFlex** ≥ 0.8.7（0.8.7 的 API 改名了本桥接调用的 registrar 方法）
-- **Exposure**：
-  - 1.9.20+（Minecraft 1.20.1，Fabric 与 Forge 47+）
-  - 1.9.18+（Minecraft 1.21.1，NeoForge 21.1+）
+- **Exposure** ≥ 1.9.20（Minecraft 1.20.1，Fabric 与 Forge 47+）
 - 仅客户端。
 
 ## 安装
@@ -52,13 +52,10 @@ Exposure 的取景框 overlay 是一个交互式覆盖层：举起相机时它�
 ```bash
 ./tools/build-forge.sh          # MC 1.20.1 Forge   → forge/build/libs/
 ./tools/build-fabric.sh         # MC 1.20.1 Fabric  → fabric/build/libs/
-./tools/build-neoforge.sh       # MC 1.21.1 NeoForge → neoforge/build/libs/
-# 或：./gradlew :forge:build :fabric:build :neoforge:build
+# 或：./gradlew :forge:build :fabric:build
 ```
 
 依赖说明：ControlFlex API 经 JitPack 解析（`com.github.ControlFlexMC:control-flex-api:0.8.7`，纯 Java、与 loader 无关）；Exposure 走 CurseForge Maven（`curse.maven:exposure-871755:*`），与 cfx-compat-epicfight 对 Epic Fight 的依赖方式一致。
-
-> 1.21.1 Fabric 版本规划中，暂未构建。
 
 ## 文档
 
