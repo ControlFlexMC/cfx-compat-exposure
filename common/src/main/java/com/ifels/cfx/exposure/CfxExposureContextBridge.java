@@ -8,43 +8,48 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * 取景框 overlay 前台/后台桥接。
+ * Viewfinder overlay foreground/background bridge.
  *
- * <p>由 {@code CameraClientViewfinderMixin} 在 Exposure 的
- * {@code CameraClient.setupViewfinder(Camera)}（进入前台）与
- * {@code CameraClient.removeViewfinder()}（返回后台）方法结尾处触发，
- * 把取景框 overlay 声明为 ControlFlex 的交互上下文
- * （{@link IInteractiveContextRegistrar}）。</p>
+ * <p>Triggered by {@code CameraClientViewfinderMixin} at the end of Exposure's
+ * {@code CameraClient.setupViewfinder(Camera)} (enters foreground) and
+ * {@code CameraClient.removeViewfinder()} (returns to background), declaring
+ * the viewfinder overlay as a ControlFlex interactive context
+ * ({@link IInteractiveContextRegistrar}).</p>
  *
- * <p>通知用的 className <b>不依赖硬编码字符串</b>：先取 Exposure 当前活跃
- * {@link Viewfinder} 的 overlay 实例，用 {@code getClass().getName()} 得到该 jar
- * 中真实存在的类名（对混淆/重映射差异以及 {@code ViewfinderRegistry} 注册的
- * 自定义取景框同样生效）；仅当运行时拿不到实例时才回退到默认类名。</p>
+ * <p>The className used in notifications is <b>not a hardcoded string</b>:
+ * the overlay instance is taken from Exposure's active {@link Viewfinder}
+ * and {@code getClass().getName()} yields the class that actually exists in
+ * that jar (works across obfuscation/remapping and custom viewfinders from
+ * {@code ViewfinderRegistry}). Falls back to the default class name only when
+ * no instance is available at runtime.</p>
  *
- * <p>ControlFlex 未安装或尚未初始化时，{@link ControlFlexApi#getInteractiveContextRegistrar()}
- * 返回 {@code null} —— 所有调用点都必须判空。</p>
+ * <p>When ControlFlex is missing or not yet initialized,
+ * {@link ControlFlexApi#getInteractiveContextRegistrar()} returns {@code null}
+ * — every call site must null-check.</p>
  *
- * <p>线程安全：仅从客户端主线程调用（Mixin 回调与各 loader 事件均满足）。</p>
+ * <p>Thread safety: called only from the client main thread (mixin callbacks
+ * and loader events all satisfy this).</p>
  */
 public final class CfxExposureContextBridge {
 
-    /** 兜底类名：标准取景框 overlay（仅在运行时无法解析实例时使用）。 */
+    /** Fallback class name: the standard viewfinder overlay (used only when no instance can be resolved). */
     public static final String DEFAULT_OVERLAY_CLASS =
             "io.github.mortuusars.exposure.client.camera.viewfinder.ViewfinderOverlay";
 
     private static final Logger LOGGER = LogManager.getLogger("cfx-compat-exposure");
 
-    /** 当前处于前台的 overlay 真实运行时类名；{@code null} = 不在前台。 */
+    /** Runtime class name of the overlay currently in the foreground; {@code null} = not in foreground. */
     private static String foregroundClassName;
 
     private CfxExposureContextBridge() {
     }
 
     /**
-     * 解析取景框 overlay 的真实运行时类名。
+     * Resolve the real runtime class name of the viewfinder overlay.
      *
-     * <p>从 Exposure 的活跃 {@link Viewfinder} 取 overlay 实例并读取其运行时类名；
-     * 任何一步失败（无活跃取景框、自定义实现缺失等）都回退 {@link #DEFAULT_OVERLAY_CLASS}。</p>
+     * <p>Reads the overlay instance from Exposure's active {@link Viewfinder};
+     * any failure (no active viewfinder, missing custom implementation, etc.)
+     * falls back to {@link #DEFAULT_OVERLAY_CLASS}.</p>
      */
     public static String resolveOverlayClassName() {
         try {
@@ -53,20 +58,20 @@ public final class CfxExposureContextBridge {
                 return viewfinder.overlay().getClass().getName();
             }
         } catch (Throwable ignored) {
-            // 回退到默认类名
+            // Fall back to the default class name
         }
         return DEFAULT_OVERLAY_CLASS;
     }
 
     /**
-     * 取景框 overlay 进入前台（相机激活、举起取景框）。
+     * Viewfinder overlay entered the foreground (camera activated, looking through the viewfinder).
      *
-     * <p>Exposure 的 {@code setupViewfinder} 开头总是先调用 {@code removeViewfinder()}
-     * 以替换旧取景框，因此“换相机”场景会先收到 {@link #onViewfinderBackground()}
-     * 再收到本通知 —— 配对语义正确。</p>
+     * <p>Exposure's {@code setupViewfinder} always calls {@code removeViewfinder()} first
+     * to replace an existing viewfinder, so a camera-switch receives
+     * {@link #onViewfinderBackground()} then this notification — pairing is correct.</p>
      *
-     * @param overlayClassName 本次进入前台的 overlay 真实运行时类名
-     *                         （由 {@link #resolveOverlayClassName()} 解析）
+     * @param overlayClassName runtime class name of the overlay entering the foreground
+     *                         (from {@link #resolveOverlayClassName()})
      */
     public static synchronized void onViewfinderForeground(String overlayClassName) {
         if (foregroundClassName != null) {
@@ -84,11 +89,12 @@ public final class CfxExposureContextBridge {
     }
 
     /**
-     * 取景框 overlay 返回后台（关闭取景框、停用相机、登出）。
+     * Viewfinder overlay returned to the background (viewfinder closed, camera deactivated, logout).
      *
-     * <p>使用进入前台时记录的同名 className 发送配对的后台通知。
-     * 所有退出路径（ESC/背包键、自拍切换、相机失效的 tick 检测、登出）都会汇聚到
-     * Exposure 的 {@code CameraClient.removeViewfinder()}，由 Mixin 触发本方法。</p>
+     * <p>Sends the paired background notification with the same className recorded on enter.
+     * Every exit path (ESC/inventory, selfie switch, per-tick camera-inactive check, logout)
+     * funnels through Exposure's {@code CameraClient.removeViewfinder()}, which the mixin
+     * uses to trigger this method.</p>
      */
     public static synchronized void onViewfinderBackground() {
         if (foregroundClassName == null) {
@@ -105,8 +111,9 @@ public final class CfxExposureContextBridge {
     }
 
     /**
-     * 登出/离开世界：取景框必然随之退出，补发一次后台通知，并重置配对状态。
-     * （ControlFlex 在 phase 退出时也会自动清理，这里是双保险。）
+     * Logout / leave world: the viewfinder always leaves with it, so emit a background
+     * notification and reset pairing state.
+     * (ControlFlex also auto-clears on phase exit; this is belt-and-braces.)
      */
     public static synchronized void onWorldExit() {
         if (foregroundClassName != null) {

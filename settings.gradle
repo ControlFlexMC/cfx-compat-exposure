@@ -25,7 +25,7 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
 }
 
-// 本分支（1.20.1）仅含 1.20.1 的两个 loader；MC 1.21.1（Fabric + NeoForge）见 1.21.1 分支。
+// This branch (1.20.1) has the two 1.20.1 loaders only; MC 1.21.1 (Fabric + NeoForge) lives on the 1.21.1 branch.
 include 'forge', 'fabric'
 
 rootProject.name = 'cfx-compat-exposure'

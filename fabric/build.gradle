@@ -28,7 +28,7 @@ loom {
     }
 }
 
-// 双 loader 共享同一份源码（com.ifels.cfx.exposure 与 Mixin 均与 loader 无关）。
+// Both loaders share the same sources (com.ifels.cfx.exposure and mixins are loader-agnostic).
 sourceSets {
     main {
         java.srcDir(rootProject.file('common/src/main/java'))
@@ -39,7 +39,7 @@ repositories {
     mavenCentral()
     maven { url 'https://cursemaven.com' }
     maven { url 'https://jitpack.io' }
-    // SpongePowered repo: 解析 Fabric 下的 SpongeMixin annotation processor。
+    // SpongePowered repo: resolves the SpongeMixin annotation processor on Fabric.
     maven {
         name = 'SpongePowered'
         url = 'https://repo.spongepowered.org/repository/maven-public/'
@@ -53,9 +53,9 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
 
-    // ControlFlex API（纯 Java，与 loader 无关），经 JitPack 解析。
+    // ControlFlex API (plain Java, loader-agnostic), resolved from JitPack.
     compileOnly "com.github.ControlFlexMC:control-flex-api:${controlflex_api_version}"
-    // Exposure 1.9.20 (1.20.1 Fabric；1.9.21 未发布 Fabric 版)
+    // Exposure 1.9.20 (1.20.1 Fabric; 1.9.21 has no Fabric release)
     // https://www.curseforge.com/minecraft/mc-mods/exposure/files/7812667
     compileOnly 'curse.maven:exposure-871755:7812667'
     compileOnly 'org.jetbrains:annotations:24.0.1'
