@@ -15,9 +15,9 @@ java {
     toolchain.languageVersion = JavaLanguageVersion.of(java_version as int)
 }
 
-// 注意：net.neoforged.moddev（非 legacyforge）不提供 mixin {} DSL。
-// 与 cfx-compat-epicfight 的 NeoForge 构建一致：仅配置 Mixin annotation processor，
-// 全部 Mixin 均为 remap = false（第三方类目标），无需生成/使用 refmap。
+// Note: net.neoforged.moddev (not legacyforge) does not provide a mixin {} DSL.
+// Same as cfx-compat-epicfight's NeoForge build: Mixin annotation processor only.
+// All mixins are remap = false (third-party targets), so no refmap is generated or used.
 
 neoForge {
     version = neoforge_version
@@ -35,7 +35,7 @@ neoForge {
     }
 }
 
-// 双 loader 共享同一份源码（com.ifels.cfx.exposure 与 Mixin 均与 loader 无关）。
+// Both loaders share the same sources (com.ifels.cfx.exposure and mixins are loader-agnostic).
 sourceSets {
     main {
         java.srcDir(rootProject.file('common/src/main/java'))
@@ -49,7 +49,7 @@ repositories {
 }
 
 dependencies {
-    // ControlFlex API（纯 Java，与 loader 无关），经 JitPack 解析。
+    // ControlFlex API (plain Java, loader-agnostic), resolved from JitPack.
     compileOnly "com.github.ControlFlexMC:control-flex-api:${controlflex_api_version}"
     // Exposure 1.9.18 (1.21.1 NeoForge)
     // https://www.curseforge.com/minecraft/mc-mods/exposure/files/8223555
