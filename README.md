@@ -2,7 +2,7 @@
 
 ControlFlex ↔ Exposure bridge mod — notifies ControlFlex when the Exposure camera viewfinder overlay enters/leaves the foreground, so stick behavior switches correctly while playing the camera.
 
-[中文](README_ZH.md)
+[Chinese](README_ZH.md)
 
 > This branch (`1.21.1`) targets **Minecraft 1.21.1 (Fabric + NeoForge)**. The Minecraft 1.20.1 flavors (Forge + Fabric) live on the `1.20.1` branch.
 
